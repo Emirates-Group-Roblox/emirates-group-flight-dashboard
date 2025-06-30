@@ -1,1 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Staff Dashboard</title>
+</head>
+<body>
+  <h2>Manage Flights</h2>
+
+  <form id="flight-form">
+    <input type="text" placeholder="Flight Number" name="number"><br>
+    <input type="text" placeholder="Aircraft" name="aircraft"><br>
+    <input type="text" placeholder="Departure Airport" name="departure"><br>
+    <input type="text" placeholder="Arrival Airport" name="arrival"><br>
+    <input type="text" placeholder="Departure Time" name="dep_time"><br>
+    <input type="text" placeholder="Arrival Time" name="arr_time"><br>
+    <input type="text" placeholder="Terminal" name="terminal"><br>
+    <input type="text" placeholder="Gate" name="gate"><br>
+    <input type="text" placeholder="Route Type" name="route"><br>
+    <input type="text" placeholder="Status" name="status"><br>
+    <button type="submit">Add Flight</button>
+  </form>
+
+  <p id="dashboard-message"></p>
+
+  <script>
+    document.getElementById("flight-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = {};
+      formData.forEach((v, k) => data[k] = v);
+
+      const res = await fetch("https://your-replit-url.repl.co/add-flight", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": localStorage.getItem("token")
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+      document.getElementById("dashboard-message").textContent = result.success
+        ? "Flight added successfully!"
+        : "Error adding flight.";
+    });
+  </script>
+</body>
+</html>
 
