@@ -2,21 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Emirates Group Roblox - Flight Board</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emirates Group Roblox | Flight Info</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    h1 { color: #d71921; }
+    .flight { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; }
+  </style>
 </head>
 <body>
-  <header>
-    <img src="https://media.discordapp.net/attachments/1277316946932531292/1383672923205926962/Emirates_Group_Roblox_Official_Banner.png" alt="Emirates Banner" class="banner" />
-    <a href="login.html" class="login-button">Login as Staff</a>
-  </header>
+  <h1>Live Flight Information</h1>
+  <div id="flight-list">Loading...</div>
 
-  <main id="flight-board">
-    <p>Loading flight data...</p>
-  </main>
+  <script>
+    async function loadFlights() {
+      const res = await fetch("http://172.31.128.68:3000");
+      const flights = await res.json();
+      const list = document.getElementById("flight-list");
+      if (flights.length === 0) {
+        list.innerHTML = "<p>No flights scheduled currently. Please check back later.</p>";
+      } else {
+        list.innerHTML = flights.map(flight => `
+          <div class="flight">
+            <strong>${flight.number}</strong> | ${flight.aircraft}<br>
+            From ${flight.departure} → ${flight.arrival}<br>
+            Departure: ${flight.dep_time}<br>
+            Arrival: ${flight.arr_time}<br>
+            Terminal: ${flight.terminal}, Gate: ${flight.gate}<br>
+            Route: ${flight.route} <br>
+            Status: ${flight.status}
+          </div>
+        `).join("");
+      }
+    }
 
-  <script src="script.js"></script>
+    loadFlights();
+  </script>
 </body>
 </html>
 
