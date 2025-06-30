@@ -8,22 +8,63 @@
   <h2>Manage Flights</h2>
 
   <form id="flight-form">
-    <input type="text" placeholder="Flight Number" name="number"><br>
-    <input type="text" placeholder="Aircraft" name="aircraft"><br>
-    <input type="text" placeholder="Departure Airport" name="departure"><br>
-    <input type="text" placeholder="Arrival Airport" name="arrival"><br>
-    <input type="text" placeholder="Departure Time" name="dep_time"><br>
-    <input type="text" placeholder="Arrival Time" name="arr_time"><br>
-    <input type="text" placeholder="Terminal" name="terminal"><br>
-    <input type="text" placeholder="Gate" name="gate"><br>
-    <input type="text" placeholder="Route Type" name="route"><br>
-    <input type="text" placeholder="Status" name="status"><br>
+    <h3>Add Flight</h3>
+    <input type="text" name="number" placeholder="Flight Number"><br>
+    <input type="text" name="aircraft" placeholder="Aircraft"><br>
+    <input type="text" name="departure" placeholder="Departure Airport"><br>
+    <input type="text" name="arrival" placeholder="Arrival Airport"><br>
+    <input type="text" name="dep_time" placeholder="Departure Time (YYYY-MM-DD HH:MM)"><br>
+    <input type="text" name="arr_time" placeholder="Arrival Time (YYYY-MM-DD HH:MM)"><br>
+    <input type="text" name="terminal" placeholder="Terminal"><br>
+    <input type="text" name="gate" placeholder="Gate"><br>
+    <input type="text" name="route" placeholder="Route Type"><br>
+    <input type="text" name="status" placeholder="Status"><br>
     <button type="submit">Add Flight</button>
+  </form>
+
+  <br><hr><br>
+
+  <h3>All Flights</h3>
+  <div id="flight-list">Loading...</div>
+
+  <br><hr><br>
+
+  <h3>Update Status</h3>
+  <form id="update-form">
+    <input type="text" name="number" placeholder="Flight Number"><br>
+    <input type="text" name="status" placeholder="New Status"><br>
+    <button type="submit">Update</button>
+  </form>
+
+  <br>
+
+  <h3>Remove Flight</h3>
+  <form id="remove-form">
+    <input type="text" name="number" placeholder="Flight Number"><br>
+    <button type="submit">Remove</button>
   </form>
 
   <p id="dashboard-message"></p>
 
   <script>
+    const token = localStorage.getItem("token");
+
+    async function fetchFlights() {
+      const res = await fetch("https://a4e13928-244e-4ca4-91b4-4ec1351271ca-00-ownd7ice2k1e.riker.replit.dev/all-flights", {
+        headers: { "Authorization": token }
+      });
+      const flights = await res.json();
+      const list = document.getElementById("flight-list");
+
+      if (Array.isArray(flights) && flights.length > 0) {
+        list.innerHTML = flights.map(f =>
+          `<div><strong>${f.number}</strong> – ${f.status} (${f.departure} → ${f.arrival})</div>`
+        ).join("");
+      } else {
+        list.innerHTML = "<p>No flights found.</p>";
+      }
+    }
+
     document.getElementById("flight-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
@@ -34,16 +75,59 @@
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": localStorage.getItem("token")
+          "Authorization": token
         },
         body: JSON.stringify(data)
       });
 
-      const result = await res.json();
-      document.getElementById("dashboard-message").textContent = result.success
-        ? "Flight added successfully!"
+      document.getElementById("dashboard-message").textContent = (await res.json()).success
+        ? "Flight added."
         : "Error adding flight.";
+      fetchFlights();
     });
+
+    document.getElementById("remove-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const number = e.target.number.value;
+
+      const res = await fetch("https://a4e13928-244e-4ca4-91b4-4ec1351271ca-00-ownd7ice2k1e.riker.replit.dev/remove-flight", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token
+        },
+        body: JSON.stringify({ number })
+      });
+
+      document.getElementById("dashboard-message").textContent = (await res.json()).success
+        ? "Flight removed."
+        : "Error removing flight.";
+      fetchFlights();
+    });
+
+    document.getElementById("update-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = {};
+      formData.forEach((v, k) => data[k] = v);
+
+      const res = await fetch("https://a4e13928-244e-4ca4-91b4-4ec1351271ca-00-ownd7ice2k1e.riker.replit.dev/update-flight", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token
+        },
+        body: JSON.stringify(data)
+      });
+
+      document.getElementById("dashboard-message").textContent = (await res.json()).success
+        ? "Status updated."
+        : "Error updating status.";
+      fetchFlights();
+    });
+
+    fetchFlights();
   </script>
 </body>
 </html>
+
