@@ -16,7 +16,7 @@
 
   <script>
     async function loadFlights() {
-      const res = await fetch("http://172.31.128.68:3000");
+      const res = await fetch("https://a4e13928-244e-4ca4-91b4-4ec1351271ca-00-ownd7ice2k1e.riker.replit.dev/flights.json");
       const flights = await res.json();
       const list = document.getElementById("flight-list");
       if (flights.length === 0) {
@@ -40,4 +40,5 @@
   </script>
 </body>
 </html>
+
 
