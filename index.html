@@ -2,43 +2,64 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Emirates Group Roblox | Flight Info</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emirates Group Roblox - Flight Status</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    body { font-family: sans-serif; margin: 2rem; }
-    h1 { color: #d71921; }
-    .flight { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0f0f0f;
+      color: white;
+    }
+    .emirates-red {
+      color: #d71921;
+    }
+    .emirates-banner {
+      max-width: 100%;
+      border-radius: 12px;
+    }
   </style>
 </head>
-<body>
-  <h1>Live Flight Information</h1>
-  <div id="flight-list">Loading...</div>
+<body class="p-4">
+  <div class="text-center">
+    <img src="https://media.discordapp.net/attachments/1277316946932531292/1383672923205926962/Emirates_Group_Roblox_Official_Banner.png" class="emirates-banner mb-6">
+    <h1 class="text-3xl emirates-red font-bold mb-2">Flight Status - Emirates Group Roblox</h1>
+    <p class="text-gray-400 mb-6">Live Operations Display</p>
+  </div>
+
+  <div id="flights" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 text-sm"></div>
 
   <script>
-    async function loadFlights() {
+    async function fetchFlights() {
       const res = await fetch("https://a4e13928-244e-4ca4-91b4-4ec1351271ca-00-ownd7ice2k1e.riker.replit.dev/flights.json");
       const flights = await res.json();
-      const list = document.getElementById("flight-list");
-      if (flights.length === 0) {
-        list.innerHTML = "<p>No flights scheduled currently. Please check back later.</p>";
-      } else {
-        list.innerHTML = flights.map(flight => `
-          <div class="flight">
-            <strong>${flight.number}</strong> | ${flight.aircraft}<br>
-            From ${flight.departure} → ${flight.arrival}<br>
-            Departure: ${flight.dep_time}<br>
-            Arrival: ${flight.arr_time}<br>
-            Terminal: ${flight.terminal}, Gate: ${flight.gate}<br>
-            Route: ${flight.route} <br>
-            Status: ${flight.status}
-          </div>
-        `).join("");
+      const container = document.getElementById("flights");
+      container.innerHTML = "";
+
+      if (!flights || flights.length === 0) {
+        container.innerHTML = "<div class='text-center w-full text-gray-400'>There are currently no scheduled flights under the Emirates Group Roblox organisation. Please check back soon for updates. We apologise for any inconvenience caused.</div>";
+        return;
+      }
+
+      for (const f of flights) {
+        const card = document.createElement("div");
+        card.className = "bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-700";
+        card.innerHTML = `
+          <h2 class="text-lg font-bold text-white mb-1">${f.number} (${f.aircraft})</h2>
+          <p class="text-sm text-gray-300">From <strong>${f.departure}</strong> to <strong>${f.arrival}</strong></p>
+          <p class="text-sm text-gray-300">Departure: ${f.dep_time} GST</p>
+          <p class="text-sm text-gray-300">Arrival: ${f.arr_time} GST</p>
+          <p class="text-sm text-gray-300">Terminal: ${f.terminal} | Gate: ${f.gate}</p>
+          <p class="text-sm text-red-400 mt-1 font-semibold">Status: ${f.status}</p>
+        `;
+        container.appendChild(card);
       }
     }
 
-    loadFlights();
+    fetchFlights();
   </script>
 </body>
 </html>
+
 
 
