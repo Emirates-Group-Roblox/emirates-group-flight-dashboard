@@ -1,1 +1,15 @@
+[
+  {
+    "staffId": "CX-A01",
+    "name": "Tyler Nicholas",
+    "role": "Flight Attendant",
+    "password": "staff123"
+  },
+  {
+    "staffId": "PX-343",
+    "name": "Fishywishy",
+    "role": "Captain",
+    "password": "flyhigh"
+  }
+]
 
