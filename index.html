@@ -1,80 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Emirates Group Roblox - Flight Info</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="https://cdn.discordapp.com/attachments/1277316946932531292/1383672923205926962/Emirates_Group_Roblox_Official_Banner.png"/>
-    <style>
-      body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      }
-    </style>
-  </head>
-  <body class="bg-white text-black">
-    <!-- Header -->
-    <header class="bg-red-700 text-white p-4 flex justify-between items-center">
-      <div class="flex items-center space-x-4">
-        <img src="https://cdn.discordapp.com/attachments/1277316946932531292/1383672923205926962/Emirates_Group_Roblox_Official_Banner.png" alt="Emirates Banner" class="h-12 w-auto"/>
-        <h1 class="text-2xl font-semibold">Emirates Group Roblox</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emirates Group Roblox - Flight Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="https://cdn.discordapp.com/attachments/1277316946932531292/1383672923205926962/Emirates_Group_Roblox_Official_Banner.png"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9fafb;
+    }
+  </style>
+</head>
+<body class="text-gray-800">
+
+  <!-- Header -->
+  <header class="bg-red-700 text-white p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+      <img src="https://cdn.discordapp.com/attachments/1277316946932531292/1383672923205926962/Emirates_Group_Roblox_Official_Banner.png" alt="Emirates Logo" class="h-12 w-auto"/>
+    </div>
+    <nav class="space-x-6 font-medium">
+      <a href="/login.html" class="hover:underline">Login</a>
+      <a href="https://discord.gg/dZaJqdTyGd" target="_blank" class="hover:underline">Discord</a>
+      <button onclick="showCareersMessage()" class="bg-yellow-400 text-black px-3 py-1 rounded">Careers</button>
+    </nav>
+  </header>
+
+  <!-- Weekly Schedule Tabs -->
+  <section class="bg-white py-6 px-4 shadow-md">
+    <h2 class="text-2xl font-bold text-red-700 mb-4">Weekly Schedule</h2>
+    <div class="flex space-x-2 overflow-x-auto">
+      <!-- Dynamically inject day cards here -->
+      <div class="text-center border border-red-300 rounded p-3 min-w-[100px] bg-gray-100">
+        <p class="font-semibold">1 Jul</p>
+        <p class="text-sm text-gray-500">Tuesday</p>
+        <p class="text-sm">1 flight</p>
       </div>
-      <nav class="space-x-6 font-medium">
-        <a href="/login.html" class="hover:underline">Login</a>
-        <a href="https://discord.gg/dZaJqdTyGd" target="_blank" class="hover:underline">Discord</a>
-        <button onclick="showCareersMessage()" class="bg-yellow-400 text-black px-3 py-1 rounded">Careers</button>
-      </nav>
-    </header>
+      <!-- Add more days dynamically -->
+    </div>
+  </section>
 
-    <!-- Main Content -->
-    <main class="p-8">
-      <h2 class="text-3xl font-bold text-red-700 mb-4">Live Flight Information</h2>
-      <div id="flights" class="space-y-4">
-        <p>Loading...</p>
-      </div>
-    </main>
+  <!-- Flights -->
+  <main class="p-6">
+    <h2 class="text-2xl font-bold mb-4">Live Flight Information</h2>
+    <div id="flights" class="space-y-4">
+      <p>Loading flights...</p>
+    </div>
+  </main>
 
-    <script>
-      function showCareersMessage() {
-        alert("Careers Portal: This service is still under development.\n\nIf you're interested in applying to join the Emirates Group Roblox team, please reach out via our official Discord server.\n\nThank you for your patience!");
-      }
+  <script>
+    function showCareersMessage() {
+      alert("Careers Portal: This service is under development.\n\nPlease check our Discord for job openings.");
+    }
 
-      async function loadFlights() {
-        try {
-          const res = await fetch("https://a4e13928-244e-4ca4-91b4-4ec1351271ca-00-ownd7ice2k1e.riker.replit.dev/flights");
-          const data = await res.json();
+    async function loadFlights() {
+      try {
+        const res = await fetch("https://a4e13928-244e-4ca4-91b4-4ec1351271ca-00-ownd7ice2k1e.riker.replit.dev/flights");
+        const data = await res.json();
 
-          const container = document.getElementById("flights");
-          container.innerHTML = "";
+        const container = document.getElementById("flights");
+        container.innerHTML = "";
 
-          if (data.length === 0) {
-            container.innerHTML = `<div class='text-gray-600'>There are currently no scheduled flights under the Emirates Group Roblox organisation. Please check back soon for updates. We apologise for any inconvenience caused.</div>`;
-          } else {
-            data.forEach(flight => {
-              const div = document.createElement("div");
-              div.className = "p-4 border border-red-300 rounded shadow-md";
-              div.innerHTML = `
-                <h3 class="text-xl font-semibold">Flight ${flight.number} - ${flight.aircraft}</h3>
-                <p><strong>Route:</strong> ${flight.departure} to ${flight.arrival}</p>
-                <p><strong>Departure:</strong> ${flight.dep_time}</p>
-                <p><strong>Arrival:</strong> ${flight.arr_time}</p>
-                <p><strong>Terminal:</strong> ${flight.terminal} | <strong>Gate:</strong> ${flight.gate}</p>
-                <p><strong>Route Type:</strong> ${flight.route}</p>
-                <p><strong>Status:</strong> ${flight.status}</p>
-              `;
-              container.appendChild(div);
-            });
-          }
-        } catch (error) {
-          document.getElementById("flights").innerHTML = `<p class='text-red-600'>Failed to load flight data.</p>`;
-          console.error("Error loading flights:", error);
+        if (data.length === 0) {
+          container.innerHTML = `
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded shadow-sm">
+              <p class="font-semibold">No Scheduled Flights</p>
+              <p class="text-sm mt-1">There are currently no flights scheduled under Emirates Group Roblox for the selected date. Please check again later or contact our team via Discord.</p>
+            </div>`;
+        } else {
+          data.forEach(flight => {
+            const div = document.createElement("div");
+            div.className = "bg-white p-6 border border-gray-200 rounded-lg shadow-md";
+            div.innerHTML = `
+              <div class="flex justify-between items-center mb-2">
+                <h3 class="text-xl font-semibold text-red-700">Flight ${flight.number}</h3>
+                <span class="bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded">${flight.status}</span>
+              </div>
+              <p class="text-sm"><strong>Aircraft:</strong> ${flight.aircraft}</p>
+              <p class="text-sm"><strong>Route:</strong> ${flight.departure} → ${flight.arrival}</p>
+              <p class="text-sm"><strong>Departure:</strong> ${flight.dep_time} | <strong>Arrival:</strong> ${flight.arr_time}</p>
+              <p class="text-sm"><strong>Terminal:</strong> ${flight.terminal}, Gate ${flight.gate}</p>
+              <p class="text-sm"><strong>Route Type:</strong> ${flight.route}</p>
+            `;
+            container.appendChild(div);
+          });
         }
+      } catch (error) {
+        document.getElementById("flights").innerHTML = `
+          <div class="text-red-600">⚠️ Error loading flight data. Please try again later.</div>`;
+        console.error("Error loading flights:", error);
       }
+    }
 
-      loadFlights();
-    </script>
-  </body>
+    loadFlights();
+  </script>
+</body>
 </html>
+
 
 
 
