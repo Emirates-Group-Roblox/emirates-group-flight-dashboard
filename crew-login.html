@@ -1,1 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Crew Login</title>
+  <link href="style.css" rel="stylesheet">
+</head>
+<body class="flex items-center justify-center h-screen bg-gray-100">
+  <div class="bg-white p-6 rounded shadow-md w-full max-w-sm">
+    <h2 class="text-2xl font-bold mb-4">Crew Login</h2>
+    <input id="staffId" type="text" placeholder="Staff ID" class="input-field" />
+    <input id="staffPass" type="password" placeholder="Password" class="input-field" />
+    <button onclick="loginCrew()" class="btn">Login</button>
+    <p id="crew-error" class="text-red-500 mt-2 hidden">Invalid login.</p>
+  </div>
+  <script>
+    async function loginCrew() {
+      const id = document.getElementById('staffId').value;
+      const pass = document.getElementById('staffPass').value;
+      const res = await fetch('crewUsers.json');
+      const users = await res.json();
+      const user = users.find(x => x.staffId === id && x.password === pass);
+      if (user) {
+        localStorage.setItem("crewId", id);
+        window.location.href = "crew-dashboard.html";
+      } else {
+        document.getElementById('crew-error').classList.remove('hidden');
+      }
+    }
+  </script>
+</body>
+</html>
 
