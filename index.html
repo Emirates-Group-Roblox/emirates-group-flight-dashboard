@@ -5,11 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Emirates Group Roblox - Flight Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="icon" type="image/png" href="https://cdn.discordapp.com/attachments/1277316946932531292/1383672923205926962/Emirates_Group_Roblox_Official_Banner.png"/>
+  <link rel="icon" type="image/png" href="https://media.discordapp.net/attachments/1277316946932531292/1383890936748310581/Emirates_Group_Roblox_Official_Banner.png"/>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f9fafb;
+    }
+    .no-flights {
+      background-image: url('https://media.discordapp.net/attachments/1277316946932531292/1383731218494914600/A380-800_PIC_1.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
   </style>
 </head>
@@ -17,9 +23,7 @@
 
   <!-- Header -->
   <header class="bg-red-700 text-white p-4 flex justify-between items-center">
-    <div class="flex items-center space-x-4">
-      <img src="https://cdn.discordapp.com/attachments/1277316946932531292/1383672923205926962/Emirates_Group_Roblox_Official_Banner.png" alt="Emirates Logo" class="h-12 w-auto"/>
-    </div>
+    <img src="https://media.discordapp.net/attachments/1277316946932531292/1383890936748310581/Emirates_Group_Roblox_Official_Banner.png" alt="Emirates Banner" class="h-12 w-auto"/>
     <nav class="space-x-6 font-medium">
       <a href="/login.html" class="hover:underline">Login</a>
       <a href="https://discord.gg/dZaJqdTyGd" target="_blank" class="hover:underline">Discord</a>
@@ -27,23 +31,14 @@
     </nav>
   </header>
 
-  <!-- Weekly Schedule Tabs -->
+  <!-- Weekly Tabs -->
   <section class="bg-white py-6 px-4 shadow-md">
-    <h2 class="text-2xl font-bold text-red-700 mb-4">Weekly Schedule</h2>
-    <div class="flex space-x-2 overflow-x-auto">
-      <!-- Dynamically inject day cards here -->
-      <div class="text-center border border-red-300 rounded p-3 min-w-[100px] bg-gray-100">
-        <p class="font-semibold">1 Jul</p>
-        <p class="text-sm text-gray-500">Tuesday</p>
-        <p class="text-sm">1 flight</p>
-      </div>
-      <!-- Add more days dynamically -->
-    </div>
+    <h2 class="text-2xl font-bold text-red-700 mb-4">Scheduled Flights</h2>
+    <div id="dateTabs" class="flex space-x-2 overflow-x-auto"></div>
   </section>
 
-  <!-- Flights -->
+  <!-- Flights Content -->
   <main class="p-6">
-    <h2 class="text-2xl font-bold mb-4">Live Flight Information</h2>
     <div id="flights" class="space-y-4">
       <p>Loading flights...</p>
     </div>
@@ -54,22 +49,63 @@
       alert("Careers Portal: This service is under development.\n\nPlease check our Discord for job openings.");
     }
 
-    async function loadFlights() {
+    const flightsContainer = document.getElementById("flights");
+    const dateTabs = document.getElementById("dateTabs");
+
+    // Create date buttons
+    const today = new Date();
+    const dates = [];
+
+    for (let i = 0; i < 6; i++) {
+      const d = new Date();
+      d.setDate(today.getDate() + i);
+      dates.push(d);
+    }
+
+    function formatDateDisplay(date) {
+      return `${date.toLocaleDateString("en-US", { weekday: 'short' })}<br>${date.getDate()} ${date.toLocaleDateString("en-US", { month: 'short' })}`;
+    }
+
+    function formatDateKey(date) {
+      return date.toISOString().split("T")[0]; // "YYYY-MM-DD"
+    }
+
+    function renderTabs() {
+      dateTabs.innerHTML = '';
+      dates.forEach((date, index) => {
+        const btn = document.createElement("button");
+        btn.className = `px-4 py-2 border rounded-lg text-sm text-center font-medium ${
+          index === 0 ? 'bg-red-600 text-white' : 'bg-gray-100'
+        }`;
+        btn.innerHTML = formatDateDisplay(date);
+        btn.onclick = () => {
+          document.querySelectorAll("#dateTabs button").forEach(b => b.classList.remove("bg-red-600", "text-white"));
+          btn.classList.add("bg-red-600", "text-white");
+          loadFlights(formatDateKey(date));
+        };
+        dateTabs.appendChild(btn);
+      });
+
+      loadFlights(formatDateKey(dates[0])); // Load today's flights by default
+    }
+
+    async function loadFlights(date) {
       try {
         const res = await fetch("https://a4e13928-244e-4ca4-91b4-4ec1351271ca-00-ownd7ice2k1e.riker.replit.dev/flights");
-        const data = await res.json();
+        const allFlights = await res.json();
 
-        const container = document.getElementById("flights");
-        container.innerHTML = "";
+        // Filter by date (assumes flights include a `date` field in "YYYY-MM-DD")
+        const flights = allFlights.filter(f => f.date === date);
+        flightsContainer.innerHTML = '';
 
-        if (data.length === 0) {
-          container.innerHTML = `
-            <div class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded shadow-sm">
-              <p class="font-semibold">No Scheduled Flights</p>
-              <p class="text-sm mt-1">There are currently no flights scheduled under Emirates Group Roblox for the selected date. Please check again later or contact our team via Discord.</p>
+        if (flights.length === 0) {
+          flightsContainer.innerHTML = `
+            <div class="no-flights w-full h-64 flex flex-col justify-center items-center text-white rounded-lg shadow-lg p-6">
+              <h3 class="text-2xl font-bold">No Flights Scheduled</h3>
+              <p class="text-sm mt-2 max-w-md text-center">There are currently no flights scheduled for this day under the Emirates Group Roblox operations. Please check back later or refer to our Discord server for updates.</p>
             </div>`;
         } else {
-          data.forEach(flight => {
+          flights.forEach(flight => {
             const div = document.createElement("div");
             div.className = "bg-white p-6 border border-gray-200 rounded-lg shadow-md";
             div.innerHTML = `
@@ -83,22 +119,16 @@
               <p class="text-sm"><strong>Terminal:</strong> ${flight.terminal}, Gate ${flight.gate}</p>
               <p class="text-sm"><strong>Route Type:</strong> ${flight.route}</p>
             `;
-            container.appendChild(div);
+            flightsContainer.appendChild(div);
           });
         }
-      } catch (error) {
-        document.getElementById("flights").innerHTML = `
-          <div class="text-red-600">⚠️ Error loading flight data. Please try again later.</div>`;
-        console.error("Error loading flights:", error);
+      } catch (err) {
+        flightsContainer.innerHTML = `<p class="text-red-600">Failed to load flight data. Try again later.</p>`;
+        console.error(err);
       }
     }
 
-    loadFlights();
+    renderTabs();
   </script>
 </body>
 </html>
-
-
-
-
-
