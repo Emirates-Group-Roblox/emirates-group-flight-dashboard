@@ -1,37 +1,24 @@
 body {
-  font-family: Arial, sans-serif;
-  background: #f8f8f8;
-  color: #222;
-  margin: 0;
-  padding: 0;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
 }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #d71921;
+.input-field {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.btn {
+  background-color: #B91C1C;
+  color: white;
   padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-.banner {
-  height: 60px;
+.btn:hover {
+  background-color: #991B1B;
 }
-
-.login-button {
-  background: #fff;
-  padding: 8px 12px;
-  text-decoration: none;
-  color: #d71921;
-  border-radius: 4px;
-  font-weight: bold;
-}
-
-.flight {
-  background: #fff;
-  padding: 15px;
-  margin: 10px 20px;
-  border-left: 4px solid #d71921;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
-
