@@ -1,45 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Staff Login</title>
+  <meta charset="UTF-8" />
+  <title>OCC Login</title>
+  <link href="style.css" rel="stylesheet">
 </head>
-<body>
-  <h2>Staff Login</h2>
-  <form id="login-form">
-    <label>Username: <input type="text" id="username"></label><br><br>
-    <label>Password: <input type="password" id="password"></label><br><br>
-    <button type="submit">Login</button>
-  </form>
-
-  <p id="message"></p>
-
+<body class="flex items-center justify-center h-screen bg-gray-100">
+  <div class="bg-white p-6 rounded shadow-md w-full max-w-sm">
+    <h2 class="text-2xl font-bold mb-4">OCC Login</h2>
+    <input id="occ-user" type="text" placeholder="Username" class="input-field" />
+    <input id="occ-pass" type="password" placeholder="Password" class="input-field" />
+    <button onclick="loginOCC()" class="btn">Login</button>
+    <p id="occ-error" class="text-red-500 mt-2 hidden">Invalid login.</p>
+  </div>
   <script>
-    document.getElementById("login-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-
-      const res = await fetch("https://a4e13928-244e-4ca4-91b4-4ec1351271ca-00-ownd7ice2k1e.riker.replit.dev/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-      });
-
-      const result = await res.json();
-      const message = document.getElementById("message");
-
-      if (result.success) {
-        localStorage.setItem("token", result.token);
+    async function loginOCC() {
+      const u = document.getElementById('occ-user').value;
+      const p = document.getElementById('occ-pass').value;
+      const res = await fetch('occUsers.json');
+      const users = await res.json();
+      const match = users.find(x => x.username === u && x.password === p);
+      if (match) {
+        localStorage.setItem("occUser", u);
         window.location.href = "dashboard.html";
       } else {
-        message.textContent = "Invalid credentials.";
+        document.getElementById('occ-error').classList.remove('hidden');
       }
-    });
+    }
   </script>
 </body>
 </html>
 
-</html>
 
 
